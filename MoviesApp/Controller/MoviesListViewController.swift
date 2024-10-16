@@ -15,7 +15,13 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let movie = data[indexPath.row]
         let cell = moviesTable.dequeueReusableCell(withIdentifier: "MovieTableViewCell", for: indexPath) as! MovieTableViewCell
-        cell.movieImage.image = UIImage(named: movie.image)
+        if let imageData = Data(base64Encoded: movie.image), let decodedImage = UIImage(data: imageData) {
+            cell.movieImage.image = decodedImage
+        } else if let assetImage = UIImage(named: movie.image) {
+            cell.movieImage.image = assetImage
+        } else {
+            cell.movieImage.image = UIImage(named: "placeholderImage")
+        }
         cell.movieTitle.text = movie.title
         cell.movieGenre.text = movie.genre
         cell.movieRate.text = "⭐️ \(movie.rate)"
@@ -34,15 +40,6 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
     
     @IBOutlet weak var moviesTable: UITableView!
     
-    let data: [Movie] = [
-        Movie(title: "Titanic", image: "titanic", genre: "Romantic", year: 1997, rate: 9.5),
-        Movie(title: "Heart of stone", image: "heartofstone", genre: "Action", year: 2023, rate: 8.0),
-        Movie(title: "IT", image: "it", genre: "Horror", year: 2017, rate: 7.5),
-        Movie(title: "Transcendence", image: "transcendence", genre: "Action", year: 2014, rate: 7.0),
-        Movie(title: "Annabelle", image: "anabelle", genre: "Horror", year: 2014, rate: 8.0),
-        Movie(title: "Sweet girl", image: "sweetgirl", genre: "Action", year: 2021, rate: 8.5)
-    ]
-
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -51,7 +48,11 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
         let nib = UINib(nibName: "MovieTableViewCell", bundle: nil)
         moviesTable.register(nib, forCellReuseIdentifier: "MovieTableViewCell")
     }
-
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        moviesTable.reloadData()
+    }
+    
 }
 

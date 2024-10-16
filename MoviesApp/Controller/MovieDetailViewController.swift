@@ -21,7 +21,13 @@ class MovieDetailViewController: UIViewController {
         
         if let movie = movie {
             movieTitle.text = movie.title
-            movieImage.image = UIImage(named: movie.image)
+            if let imageData = Data(base64Encoded: movie.image), let decodedImage = UIImage(data: imageData) {
+                movieImage.image = decodedImage
+            } else if let assetImage = UIImage(named: movie.image) {
+                movieImage.image = assetImage
+            } else {
+                movieImage.image = UIImage(named: "placeholderImage")
+            }
             movieGenre.text = movie.genre
             movieRate.text = "⭐️ \(movie.rate)"
             movieYear.text = "\(movie.year)"
