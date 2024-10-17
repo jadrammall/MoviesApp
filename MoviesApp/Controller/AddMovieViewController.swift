@@ -29,8 +29,8 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         movieImage.addGestureRecognizer(tapGesture)
         
         let tapOutsideGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-            tapOutsideGesture.cancelsTouchesInView = false
-            view.addGestureRecognizer(tapOutsideGesture)
+        tapOutsideGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapOutsideGesture)
     }
     
     private func setupTextField(_ textField: UITextField, placeholder: String) {
@@ -55,11 +55,12 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         }
         
         let movie = Movie(title: title, image: selectedImageString, genre: genre, year: year, rate: rate)
+
+        // Post a notification to inform the MoviesListViewController about the new movie
+        NotificationCenter.default.post(name: NSNotification.Name("MovieAdded"), object: movie)
         
-        data.insert(movie, at: 0)
         clearAllFields()
         movieImage.image = UIImage(systemName: "photo.badge.plus")
-        
     }
     
     @objc func selectImage() {

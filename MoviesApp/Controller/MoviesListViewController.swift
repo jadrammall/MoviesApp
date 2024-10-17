@@ -8,6 +8,15 @@
 import UIKit
 
 class MoviesListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    private var data: [Movie] = [
+        Movie(title: "Titanic", image: "titanic", genre: "Romantic", year: 1997, rate: 9.5),
+        Movie(title: "Heart of stone", image: "heartofstone", genre: "Action", year: 2023, rate: 8.0),
+        Movie(title: "IT", image: "it", genre: "Horror", year: 2017, rate: 7.5),
+        Movie(title: "Transcendence", image: "transcendence", genre: "Action", year: 2014, rate: 7.0),
+        Movie(title: "Annabelle", image: "anabelle", genre: "Horror", year: 2014, rate: 8.0),
+        Movie(title: "Sweet girl", image: "sweetgirl", genre: "Action", year: 2021, rate: 8.5)
+    ]
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count
     }
@@ -47,11 +56,16 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
         moviesTable.delegate = self
         let nib = UINib(nibName: "MovieTableViewCell", bundle: nil)
         moviesTable.register(nib, forCellReuseIdentifier: "MovieTableViewCell")
+        
+        // Add observer for the "MovieAdded" notification
+        NotificationCenter.default.addObserver(self, selector: #selector(onMovieAdded(_:)), name: NSNotification.Name("MovieAdded"), object: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        moviesTable.reloadData()
+    @objc func onMovieAdded(_ notification: Notification) {
+        if let movie = notification.object as? Movie {
+            data.insert(movie, at: 0)
+            moviesTable.reloadData()
+        }
     }
     
 }
