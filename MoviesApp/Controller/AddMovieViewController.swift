@@ -19,11 +19,27 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTextField(movieTitle, placeholder: "Title")
+        setupTextField(movieGenre, placeholder: "Genre")
+        setupTextField(movieRate, placeholder: "Rate")
+        setupTextField(movieYear, placeholder: "Year")
         
-        // Do any additional setup after loading the view.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectImage))
         movieImage.isUserInteractionEnabled = true
         movieImage.addGestureRecognizer(tapGesture)
+        
+        let tapOutsideGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+            tapOutsideGesture.cancelsTouchesInView = false
+            view.addGestureRecognizer(tapOutsideGesture)
+    }
+    
+    private func setupTextField(_ textField: UITextField, placeholder: String) {
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
+        )
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
     }
     
     @IBAction func onAddMovieButtonTap(_ sender: Any) {
@@ -42,6 +58,7 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         
         data.insert(movie, at: 0)
         clearAllFields()
+        movieImage.image = UIImage(systemName: "photo.badge.plus")
         
     }
     
@@ -50,6 +67,10 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         imagePickerController.delegate = self
         imagePickerController.sourceType = .photoLibrary
         self.present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
