@@ -140,6 +140,7 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="onAddMovieButtonTap:" destination="oQC-bv-Xg6" eventType="touchUpInside" id="eYs-dD-CLO"/>
+                                    <action selector="onAddUpdateButtonTap:" destination="oQC-bv-Xg6" eventType="touchUpInside" id="qp3-K0-VLx"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -174,6 +175,7 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Add Movie" image="plus.app" catalog="system" selectedImage="plus.app.fill" id="Njs-8d-7Wz"/>
                     <connections>
+                        <outlet property="addUpdateButton" destination="SF5-dF-dKE" id="baM-Zf-ocX"/>
                         <outlet property="movieGenre" destination="B9B-YX-r9e" id="RON-tq-evl"/>
                         <outlet property="movieImage" destination="SCn-Of-R2D" id="zB3-nd-vTj"/>
                         <outlet property="movieRate" destination="HkR-5c-Tvi" id="Dyp-wJ-Iey"/>

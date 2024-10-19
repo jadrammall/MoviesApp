@@ -9,7 +9,7 @@ import UIKit
 
 class MoviesListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    private var data: [MovieEntity] = [] // Update to use MovieEntity from CoreData
+    private var data: [MovieEntity] = []
     
     @IBOutlet weak var moviesTable: UITableView!
     
@@ -27,6 +27,8 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
         loadMovies()
         
         NotificationCenter.default.addObserver(self, selector: #selector(onMovieAdded(_:)), name: NSNotification.Name("MovieAdded"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onMovieUpdated(_:)), name: NSNotification.Name("MovieUpdated"), object: nil)
+        
     }
     
     private func loadMovies() {
@@ -38,6 +40,15 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
         if let movie = notification.object as? MovieEntity {
             data.insert(movie, at: 0)
             moviesTable.reloadData()
+        }
+    }
+    
+    @objc func onMovieUpdated(_ notification: Notification) {
+        if let updatedMovie = notification.object as? MovieEntity {
+            if let index = data.firstIndex(of: updatedMovie) {
+                data[index] = updatedMovie
+                moviesTable.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+            }
         }
     }
     
@@ -75,19 +86,41 @@ class MoviesListViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let movieToDelete = data[indexPath.row]
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completionHandler) in
+            guard let self = self else { return }
+            
+            let movieToDelete = self.data[indexPath.row]
             
             let alert = UIAlertController(title: "Delete Movie", message: "Are you sure you want to delete this movie?", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
-                CoreDataManager.shared.removeMovie(movie: movieToDelete) // Delete from Core Data
-                self.data.remove(at: indexPath.row) // Remove from local data array
+                CoreDataManager.shared.removeMovie(movie: movieToDelete)
+                self.data.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .fade)
             }))
             
-            present(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
+            completionHandler(true)
+        }
+        
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { [weak self] (action, view, completionHandler) in
+            guard let self = self else { return }
+            let movieToEdit = self.data[indexPath.row]
+            self.presentEditMovieScreen(for: movieToEdit)
+            completionHandler(true)
+        }
+        
+        let swipeActions = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        return swipeActions
+    }
+    
+    func presentEditMovieScreen(for movie: MovieEntity) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let addMovieVC = storyboard.instantiateViewController(withIdentifier: "AddMovieViewController") as? AddMovieViewController {
+            addMovieVC.movieToEdit = movie
+            present(addMovieVC, animated: true)
         }
     }
 }
