@@ -139,7 +139,6 @@
                                     <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                                 <connections>
-                                    <action selector="onAddMovieButtonTap:" destination="oQC-bv-Xg6" eventType="touchUpInside" id="eYs-dD-CLO"/>
                                     <action selector="onAddUpdateButtonTap:" destination="oQC-bv-Xg6" eventType="touchUpInside" id="qp3-K0-VLx"/>
                                 </connections>
                             </button>
