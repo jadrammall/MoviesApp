@@ -35,28 +35,28 @@ class AddMovieViewController: UIViewController, UIImagePickerControllerDelegate,
         view.addGestureRecognizer(tapOutsideGesture)
         
         if let movie = movieToEdit {
-                movieTitle.text = movie.title
-                movieGenre.text = movie.genre
-                movieRate.text = "\(movie.rate)"
-                movieYear.text = "\(movie.year)"
-                
-                if let imageData = movie.image, !imageData.isEmpty {
-                    if let decodedImageData = Data(base64Encoded: imageData),
-                       let decodedImage = UIImage(data: decodedImageData) {
-                        movieImage.image = decodedImage
-                    } else if let assetImage = UIImage(named: imageData) {
-                        movieImage.image = assetImage
-                    } else {
-                        movieImage.image = UIImage(systemName: "photo.badge.plus")
-                    }
+            movieTitle.text = movie.title
+            movieGenre.text = movie.genre
+            movieRate.text = "\(movie.rate)"
+            movieYear.text = "\(movie.year)"
+            
+            if let imageData = movie.image, !imageData.isEmpty {
+                if let decodedImageData = Data(base64Encoded: imageData),
+                   let decodedImage = UIImage(data: decodedImageData) {
+                    movieImage.image = decodedImage
+                } else if let assetImage = UIImage(named: imageData) {
+                    movieImage.image = assetImage
                 } else {
                     movieImage.image = UIImage(systemName: "photo.badge.plus")
                 }
-                
-                addUpdateButton.setTitle("Update Movie", for: .normal)
             } else {
-                addUpdateButton.setTitle("Add Movie", for: .normal)
+                movieImage.image = UIImage(systemName: "photo.badge.plus")
             }
+            
+            addUpdateButton.setTitle("Update Movie", for: .normal)
+        } else {
+            addUpdateButton.setTitle("Add Movie", for: .normal)
+        }
     }
     
     private func setupTextField(_ textField: UITextField, placeholder: String) {
@@ -86,6 +86,7 @@ class AddMovieViewController: UIViewController, UIImagePickerControllerDelegate,
         } else {
             let newMovie = CoreDataManager.shared.createMovie(title: title, image: selectedImageString, genre: genre, year: year, rate: rate)
             NotificationCenter.default.post(name: NSNotification.Name("MovieAdded"), object: newMovie)
+            clearAllFields()
         }
         
         dismiss(animated: true)
@@ -100,6 +101,15 @@ class AddMovieViewController: UIViewController, UIImagePickerControllerDelegate,
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    private func clearAllFields() {
+        movieTitle.text = ""
+        movieGenre.text = ""
+        movieYear.text = ""
+        movieRate.text = ""
+        movieImage.image = UIImage(systemName: "photo.badge.plus")
+        selectedImageString = ""
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
