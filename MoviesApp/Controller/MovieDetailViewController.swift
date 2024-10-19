@@ -14,16 +14,16 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var movieGenre: UILabel!
     @IBOutlet weak var movieYear: UILabel!
     @IBOutlet weak var movieRate: UILabel!
-    var movie: Movie?
+    var movie: MovieEntity?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let movie = movie {
             movieTitle.text = movie.title
-            if let imageData = Data(base64Encoded: movie.image), let decodedImage = UIImage(data: imageData) {
+            if let imageData = Data(base64Encoded: movie.image!), let decodedImage = UIImage(data: imageData) {
                 movieImage.image = decodedImage
-            } else if let assetImage = UIImage(named: movie.image) {
+            } else if let assetImage = UIImage(named: movie.image!) {
                 movieImage.image = assetImage
             } else {
                 movieImage.image = UIImage(named: "placeholderImage")

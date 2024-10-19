@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class AddMovieViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var movieYear: UITextField!
     @IBOutlet weak var movieRate: UITextField!
@@ -46,7 +46,7 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         guard let title = movieTitle.text, !title.isEmpty,
               let genre = movieGenre.text, !genre.isEmpty,
               let yearText = movieYear.text,
-              let year = Int(yearText),
+              let year = Int32(yearText),
               let rateText = movieRate.text,
               let rate = Double(rateText)
         else {
@@ -54,10 +54,9 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
             return
         }
         
-        let movie = Movie(title: title, image: selectedImageString, genre: genre, year: year, rate: rate)
+        let newMovie = CoreDataManager.shared.createMovie(title: title, image: selectedImageString, genre: genre, year: year, rate: rate)
 
-        // Post a notification to inform the MoviesListViewController about the new movie
-        NotificationCenter.default.post(name: NSNotification.Name("MovieAdded"), object: movie)
+        NotificationCenter.default.post(name: NSNotification.Name("MovieAdded"), object: newMovie)
         
         clearAllFields()
         movieImage.image = UIImage(systemName: "photo.badge.plus")
@@ -103,5 +102,4 @@ class AddMovieViewController: UIViewController,UIImagePickerControllerDelegate, 
         movieImage.image = nil
         selectedImageString = ""
     }
-    
 }
